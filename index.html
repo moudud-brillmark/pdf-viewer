@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF Popup Viewer</title>
+  <title>PDF Viewer (PDF.js)</title>
 
   <style>
     body {
@@ -57,14 +57,14 @@
       z-index: 10;
     }
 
-    /* PDF container */
-    .pdf-modal object {
+    /* PDF.js iframe */
+    .pdf-viewer {
       width: 100%;
       height: 100%;
       border: none;
     }
 
-    /* Mobile full screen */
+    /* Mobile */
     @media (max-width: 600px) {
       .pdf-modal__content {
         width: 100%;
@@ -84,39 +84,31 @@
     <div class="pdf-modal__content">
       <button class="pdf-modal__close" id="closePdf">✕</button>
 
-      <object
-        id="pdfObject"
-        type="application/pdf"
-      >
-        <p style="padding:16px; font-size:14px;">
-          Your browser can’t display this PDF inline.
-          <br /><br />
-          <a
-            id="pdfFallbackLink"
-            href=""
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Click here to open the PDF
-          </a>
-        </p>
-      </object>
+      <!-- PDF.js Viewer -->
+      <iframe
+        id="pdfFrame"
+        class="pdf-viewer"
+        loading="lazy"
+      ></iframe>
     </div>
   </div>
 
   <script>
+    // Your PDF
     const pdfUrl =
       "https://cdn.shopify.com/s/files/1/0766/5850/8056/files/Informe_Impacto_2023.pdf?v=1769752756";
+
+    // PDF.js viewer (official Mozilla CDN)
+    const pdfJsViewer =
+      "https://mozilla.github.io/pdf.js/web/viewer.html?file=";
 
     const openBtn = document.getElementById("openPdf");
     const closeBtn = document.getElementById("closePdf");
     const modal = document.getElementById("pdfModal");
-    const pdfObject = document.getElementById("pdfObject");
-    const fallbackLink = document.getElementById("pdfFallbackLink");
+    const iframe = document.getElementById("pdfFrame");
 
     openBtn.addEventListener("click", () => {
-      pdfObject.setAttribute("data", pdfUrl);
-      fallbackLink.href = pdfUrl;
+      iframe.src = pdfJsViewer + encodeURIComponent(pdfUrl);
       modal.classList.add("active");
       document.body.style.overflow = "hidden";
     });
@@ -128,7 +120,7 @@
 
     function closeModal() {
       modal.classList.remove("active");
-      pdfObject.removeAttribute("data"); // stop loading / free memory
+      iframe.src = ""; // cleanup
       document.body.style.overflow = "";
     }
   </script>
